@@ -1,0 +1,35 @@
+# =============================================================================
+# Borg Backup Configuration
+# =============================================================================
+# Source this file or add to your .env
+#
+# IMPORTANT: Keep this file secure. Anyone with the passphrase can read your
+# backups. Store a copy somewhere safe (password manager, sealed envelope, etc.)
+# =============================================================================
+
+# Borg repository location
+export BORG_REPO="$HOME/backups/borg/openclaw"
+
+# Passphrase for the repository
+# Generate a strong one: openssl rand -base64 32
+export BORG_PASSPHRASE="CHANGE-ME-generate-with-openssl-rand-base64-32"
+
+# Alternative: use a command to retrieve the passphrase from a keyring
+# export BORG_PASSCOMMAND="secret-tool lookup borg openclaw"
+# export BORG_PASSCOMMAND="security find-generic-password -a borg -s openclaw -w"  # macOS
+
+# Remote repository (optional, for offsite)
+# export BORG_REMOTE_REPO="ssh://backup@nas.local/volume1/borg/openclaw"
+
+# Compression (lz4 is fast, zstd is better ratio, lzma is best but slow)
+# export BORG_COMPRESSION="lz4"
+
+# =============================================================================
+# First-time setup:
+#   source borg-passphrase.example
+#   borg init --encryption=repokey $BORG_REPO
+#   borg key export $BORG_REPO ~/borg-key-backup.txt  # SAVE THIS!
+#
+# To restore on a new machine:
+#   borg key import $BORG_REPO ~/borg-key-backup.txt
+# =============================================================================

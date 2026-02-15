@@ -1,0 +1,47 @@
+# =============================================================================
+# Restic Backup Configuration
+# =============================================================================
+# Source this file or add to your .env
+# Restic is recommended for macOS (no FUSE dependency).
+# =============================================================================
+
+# Local repository
+export RESTIC_REPO="$HOME/backups/restic/openclaw"
+
+# Repository password
+# Generate a strong one: openssl rand -base64 32
+export RESTIC_PASSWORD="CHANGE-ME-generate-with-openssl-rand-base64-32"
+
+# Alternative: use a file for the password
+# export RESTIC_PASSWORD_FILE="$HOME/.restic-password"
+
+# --- Remote backends (uncomment one) ---
+
+# Backblaze B2 (cheap, ~$5/TB/month)
+# export RESTIC_REPO="b2:your-bucket-name:openclaw"
+# export B2_ACCOUNT_ID="your-account-id"
+# export B2_APPLICATION_KEY="your-app-key"
+
+# Amazon S3
+# export RESTIC_REPO="s3:s3.amazonaws.com/your-bucket/openclaw"
+# export AWS_ACCESS_KEY_ID="your-key"
+# export AWS_SECRET_ACCESS_KEY="your-secret"
+
+# S3-compatible (Wasabi, MinIO, etc.)
+# export RESTIC_REPO="s3:https://s3.wasabisys.com/your-bucket/openclaw"
+# export AWS_ACCESS_KEY_ID="your-key"
+# export AWS_SECRET_ACCESS_KEY="your-secret"
+
+# SFTP (rsync.net, NAS, any SSH server)
+# export RESTIC_REPO="sftp:backup@nas.local:/volume1/restic/openclaw"
+
+# =============================================================================
+# First-time setup:
+#   source restic-env.example
+#   restic init -r $RESTIC_REPO
+#
+# Useful commands:
+#   restic snapshots -r $RESTIC_REPO          # List snapshots
+#   restic mount -r $RESTIC_REPO /mnt/restic  # Browse backups (Linux/macOS)
+#   restic restore latest -r $RESTIC_REPO -t /tmp/restore  # Restore latest
+# =============================================================================

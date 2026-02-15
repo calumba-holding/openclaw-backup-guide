@@ -1,0 +1,28 @@
+# =============================================================================
+# OpenClaw Backup Crontab
+# =============================================================================
+# Install with: crontab /path/to/openclaw-cron.example
+# Or merge with: (crontab -l; cat openclaw-cron.example) | sort -u | crontab -
+#
+# Edit paths below to match your setup.
+# =============================================================================
+
+# Environment
+SHELL=/bin/bash
+PATH=/usr/local/bin:/usr/bin:/bin
+HOME=/home/YOUR_USERNAME
+
+# --- Tier 1: Git backup (every hour at :00) ---
+0 * * * * cd ~/hub-local && ~/openclaw-backup-guide/scripts/linux/backup-git.sh >> ~/logs/openclaw-backup/git.log 2>&1
+
+# --- Tier 2: Borg backup (3x daily) ---
+0 8,14,22 * * * ~/openclaw-backup-guide/scripts/linux/backup-borg.sh >> ~/logs/openclaw-backup/borg.log 2>&1
+
+# --- NAS sync (daily at midnight) ---
+0 0 * * * ~/openclaw-backup-guide/scripts/linux/backup-nas.sh >> ~/logs/openclaw-backup/nas.log 2>&1
+
+# --- Verification (weekly, Sunday 6am) ---
+0 6 * * 0 ~/openclaw-backup-guide/scripts/common/verify-backup.sh >> ~/logs/openclaw-backup/verify.log 2>&1
+
+# --- Log cleanup (monthly, 1st at 5am) ---
+0 5 1 * * find ~/logs/openclaw-backup -name "*.log" -mtime +30 -delete

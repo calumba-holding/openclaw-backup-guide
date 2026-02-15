@@ -1,0 +1,56 @@
+# =============================================================================
+# Systemd Service + Timer for OpenClaw Git Backup
+# =============================================================================
+# Alternative to cron. Systemd timers have better logging, dependency
+# management, and can survive missed runs.
+#
+# Install:
+#   sudo cp systemd-backup.service /etc/systemd/system/openclaw-backup.service
+#   sudo cp systemd-backup.timer /etc/systemd/system/openclaw-backup.timer
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now openclaw-backup.timer
+#
+# Check status:
+#   systemctl status openclaw-backup.timer
+#   systemctl list-timers | grep openclaw
+#   journalctl -u openclaw-backup.service -f
+# =============================================================================
+
+# --- openclaw-backup.service ---
+[Unit]
+Description=OpenClaw Git Backup
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=YOUR_USERNAME
+Group=YOUR_USERNAME
+WorkingDirectory=/home/YOUR_USERNAME/hub-local
+ExecStart=/home/YOUR_USERNAME/openclaw-backup-guide/scripts/linux/backup-git.sh
+Environment=HOME=/home/YOUR_USERNAME
+StandardOutput=journal
+StandardError=journal
+
+# Security hardening
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/home/YOUR_USERNAME
+
+[Install]
+WantedBy=multi-user.target
+
+# =============================================================================
+# Save the following as openclaw-backup.timer (separate file):
+# =============================================================================
+# [Unit]
+# Description=Run OpenClaw backup hourly
+#
+# [Timer]
+# OnCalendar=hourly
+# Persistent=true
+# RandomizedDelaySec=300
+#
+# [Install]
+# WantedBy=timers.target
+# =============================================================================

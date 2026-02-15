@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  OpenClaw Backup - launchd Configuration
+  
+  Why launchd instead of cron on macOS?
+  - Survives sleep/wake cycles (cron misses jobs during sleep)
+  - Better integration with macOS power management
+  - Runs missed jobs when the machine wakes up
+  
+  Install:
+    cp setup-launchd.plist ~/Library/LaunchAgents/com.openclaw.backup.plist
+    launchctl load ~/Library/LaunchAgents/com.openclaw.backup.plist
+  
+  Uninstall:
+    launchctl unload ~/Library/LaunchAgents/com.openclaw.backup.plist
+    rm ~/Library/LaunchAgents/com.openclaw.backup.plist
+  
+  Check status:
+    launchctl list | grep openclaw
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.openclaw.backup</string>
+    
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <!-- Update this path to where you cloned the backup scripts -->
+        <string>$HOME/openclaw-backup-guide/scripts/macos/backup-git.sh</string>
+    </array>
+    
+    <!-- Run every 3600 seconds (1 hour) -->
+    <key>StartInterval</key>
+    <integer>3600</integer>
+    
+    <!-- Also run at load (catch up after sleep) -->
+    <key>RunAtLoad</key>
+    <true/>
+    
+    <!-- Logging -->
+    <key>StandardOutPath</key>
+    <string>/tmp/openclaw-backup.stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/openclaw-backup.stderr.log</string>
+    
+    <!-- Environment -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    </dict>
+    
+    <!-- Don't spam if it fails -->
+    <key>ThrottleInterval</key>
+    <integer>300</integer>
+</dict>
+</plist>
